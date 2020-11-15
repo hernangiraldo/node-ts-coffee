@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 // General configurations
 import './config/config';
 // DB Configuration
-import './db';
+import './config/db';
 // Routes
-import indexRoutes from './routes';
+import indexRoutes from './config/routes';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));

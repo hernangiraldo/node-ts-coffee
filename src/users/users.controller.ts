@@ -1,14 +1,22 @@
 import { Request, Response } from 'express';
-import UserModel from "./user.schema";
-
-import errorCodes from '../utils/errorCodes';
 import { validationResult } from 'express-validator';
 import { EncryptDecryptPassword } from '../utils/encryptDecrypsPass';
+import UserModel from "./user.schema";
+import errorCodes from '../utils/errorCodes';
+import { ErrorResponse } from '../utils/models/ErrorResponse';
 import { iUserUpdate } from './interfaces/iUserUpdate.interface';
 import { iUser } from './interfaces/iUser.interface';
-import { ErrorResponse } from '../utils/models/ErrorResponse';
+import { eRole } from './enums/eRole.enum';
+import { iContentToken } from '../utils/interfaces/iContentToken.interface';
 
 export const getUsers = async (req: Request, res: Response) => {
+  const payload = req.get('user') as unknown as iContentToken;
+
+  if (payload.role === eRole.USER) {
+    const unauthorized = new ErrorResponse(errorCodes.unauthorized, 'Unauthorized');
+    return res.status(401).json(unauthorized);
+  }
+
   const page = Number(req.query.page) || 0;
   const size = Number(req.query.size) || 2;
 
@@ -30,13 +38,14 @@ export const saveUser = async (req: Request, res: Response) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { fullName, email, password, img, role, status, google } = req.body;
+  const { fullName, email, password, img, role: _role, status, google } = req.body;
   const pass = new EncryptDecryptPassword(password);
+  const role = !!_role ? _role : eRole.USER;
   const user: iUser = {
     fullName,
     email,
     password: pass.encryptPass(),
-    ...(role ? { role } : {}),
+    role,
     ...(img ? { img } : {}),
     ...(status ? { status } : {}),
     ...(google ? { google } : {})
@@ -89,7 +98,6 @@ export const deleteUser = async (req: Request<{id: number}>, res: Response) => {
 
     res.json()
   } catch (err) {
-    console.log(err)
     if (!err) {
       const noUser = new ErrorResponse(errorCodes.noExistUser, `User doesn't exist`);
       return res.status(404).json(noUser);

@@ -11,7 +11,7 @@ export class EncryptDecryptPassword {
     return bcrypt.hashSync(this.pass, 10);
   }
 
-  public decryptPass() {
-    // return bcrypt.compareSync
+  public decryptPass(dbPass: string) {
+    return bcrypt.compareSync(this.pass, dbPass);
   }
 }

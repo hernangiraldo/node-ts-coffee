@@ -4,8 +4,8 @@ export interface iUser {
   fullName: string,
   email: string;
   password: string;
+  role: eRole;
   img?: string;
-  role?: eRole;
   status?: boolean;
   google?: boolean;
   active?: boolean;
