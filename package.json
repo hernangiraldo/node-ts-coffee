@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ts:node": "ts-node src/index.ts",
+    "ts:node": "ts-node src/App.class.ts",
     "clean": "rm -rf dist",
     "build": "npx tsc",
     "start": "node dist",
